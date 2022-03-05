@@ -19,6 +19,8 @@ PKG_FILE = b"FILE"
 FILE_END = b"FILE_END"
 JSON_END = b"JSON_END"
 
+RECV_BUF_SIZE = 1024 * 1024
+
 def file_md5(fname):
     hash_md5 = hashlib.md5()
     with open(fname, "rb") as f:
@@ -42,10 +44,9 @@ def xxx():
         client_handler = threading.Thread(target=handle_client, args=(client,))
         client_handler.start()
 
-def client_side(file_path):
-    # file_path = "test.txt"
+def client_side(peer_addr, file_path):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(("127.0.0.1", 19030))
+    client.connect((peer_addr, 19030))
     client.send(MAGIC)    
     client.send(PKG_FILE)
     md5 = file_md5(file_path)
@@ -126,7 +127,7 @@ def listen_side():
         recv_n = len(data_buf)
         print("[*] recv_n:{}, except_n:{}".format(recv_n, size+len(FILE_END)))
         while recv_n < size+len(FILE_END):
-            recv_data = client.recv(4096)
+            recv_data = client.recv(RECV_BUF_SIZE)
             if len(recv_data) == 0:
                 print("[*] warning: zero data")
                 #break
@@ -161,6 +162,6 @@ who = sys.argv[1]
 if who=="listen":
     listen_side()
 elif who=="client":
-    client_side(sys.argv[2])
+    client_side(sys.argv[2], sys.argv[3])
 else:
     print("[-] unknown side")

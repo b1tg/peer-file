@@ -10,4 +10,4 @@ on B:
 
 on A:
 
-        python peer.py client <file-path>
+        python peer.py client <B-addr> <file-path>
