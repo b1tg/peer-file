@@ -46,7 +46,14 @@ def xxx():
 
 def client_side(peer_addr, file_path):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect((peer_addr, 19030))
+    client.settimeout(10)
+    print("connecting to {}:{}".format(peer_addr, 19030))
+    try:
+        client.connect((peer_addr, 19030))
+    except Exception as e:
+        print("connect to {} error: {}".format(peer_addr, e))
+        return
+    print("connected!")
     client.send(MAGIC)    
     client.send(PKG_FILE)
     md5 = file_md5(file_path)
